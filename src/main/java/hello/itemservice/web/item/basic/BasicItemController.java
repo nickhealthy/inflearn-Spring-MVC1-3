@@ -19,8 +19,9 @@ public class BasicItemController {
     private final ItemRepository itemRepository;
 
 
+    /* 모든 상품 조회 */
     @GetMapping
-    public String item(Model model) {
+    public String items(Model model) {
         // 모든 상품 조회
         List<Item> items = itemRepository.findAll();
         // 모델에 담기
