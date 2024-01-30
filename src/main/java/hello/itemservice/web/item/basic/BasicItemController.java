@@ -93,10 +93,21 @@ public class BasicItemController {
     }
 
     /* 상품 등록 폼 */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV4(Item item) {
         itemRepository.save(item);
         return "basic/item";
+    }
+
+    /* 상품 등록 폼 */
+    // 브라우저에서 새로고침은 이전 행위를 그대로 하는 것이기 때문에 중복으로 상품이 처리될 수 있다.
+    // 따라서 POST/ REDIRECT / GET 패턴의 형태를 취해야한다.
+    @PostMapping("/add")
+    public String addItemV5(Item item) {
+        itemRepository.save(item);
+        // URL은 아스키코드를 제외하고는 띄어쓰기나 문자 등을 처리할 수 없다.
+        // 따라서 아래와 같이 'item.getId()'는 인코딩이 필요하다.
+        return "redirect:/basic/items/" + item.getId();
     }
 
     @GetMapping("/{itemId}/edit")
