@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/basic/items")
@@ -102,12 +103,30 @@ public class BasicItemController {
     /* 상품 등록 폼 */
     // 브라우저에서 새로고침은 이전 행위를 그대로 하는 것이기 때문에 중복으로 상품이 처리될 수 있다.
     // 따라서 POST/ REDIRECT / GET 패턴의 형태를 취해야한다.
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV5(Item item) {
         itemRepository.save(item);
         // URL은 아스키코드를 제외하고는 띄어쓰기나 문자 등을 처리할 수 없다.
         // 따라서 아래와 같이 'item.getId()'는 인코딩이 필요하다.
         return "redirect:/basic/items/" + item.getId();
+    }
+
+    /* 상품 등록 폼 */
+    /*
+    * RedirectAttributes 를 사용하면
+        - URL 인코딩,
+        - PathVariable,
+        - 쿼리 파라미터까지 처리해준다.
+    * */
+    @PostMapping("/add")
+    public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        // 사용하지 않은 속성은 쿼리 파라미터로 처리하게 된다.
+        // 예시: http://localhost:8080/basic/items/{itemId}?status=true
+        redirectAttributes.addAttribute("status", true);
+        // redirectAttributes.addAttribute("id", savedItem.getId());
+        return "redirect:/basic/items/{itemId}"; // pathVariable 바인딩: {itemId}
     }
 
     @GetMapping("/{itemId}/edit")
